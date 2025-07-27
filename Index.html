@@ -1,30 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Supabase + GitHub Pages</title>
+  <meta charset="UTF-8">
+  <title>Supabase Frontend</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
   <h1>Data Users</h1>
-  <ul id="user-list"></ul>
+  <ul id="user-list">Loading...</ul>
 
   <script>
-    const supabaseUrl = 'https://ymbtbodeofdcgnsgxzzg.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME'
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+    // Ganti dengan kredensial kamu
+    const SUPABASE_URL = 'https://ymtbodeofdcgnsgxzzg.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey...'
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
     async function fetchUsers() {
-      const { data, error } = await supabase.from('users').select('*')
-      if (error) return console.error(error)
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
 
       const list = document.getElementById('user-list')
+      list.innerHTML = ''
+
+      if (error) {
+        list.innerHTML = `<li>Error: ${error.message}</li>`
+        return
+      }
+
+      if (data.length === 0) {
+        list.innerHTML = '<li>Data kosong</li>'
+        return
+      }
+
       data.forEach(user => {
-        const li = document.createElement('li')
-        li.textContent = `${user.id} - ${user.address}`
-        list.appendChild(li)
+        const item = document.createElement('li')
+        item.textContent = JSON.stringify(user)
+        list.appendChild(item)
       })
     }
-
 
     fetchUsers()
   </script>
