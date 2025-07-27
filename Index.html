@@ -1,68 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Daftar Alamat User</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f9f9f9;
-      padding: 20px;
-    }
-
-    h1 {
-      color: #333;
-    }
-
-    ul {
-      background: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.05);
-    }
-
-    li {
-      margin-bottom: 8px;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Supabase Fetch Example</title>
 </head>
 <body>
-  <h1>Alamat User dari Supabase</h1>
-  <ul id="user-list">Loading data...</ul>
+  <h1>Data Users</h1>
+  <ul id="user-list"></ul>
 
   <script>
-    const SUPABASE_URL = 'https://ymbtbodeofdcgnsgxzzg.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME'
+    const API_URL = 'https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users';
+    const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME';
 
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-    async function fetchUsers() {
-      const { data, error } = await supabase
-        .from('users')
-        .select('id, created_at, address')
-
-      const list = document.getElementById('user-list')
-      list.innerHTML = ''
-
-      if (error) {
-        list.innerHTML = `<li>Error: ${error.message}</li>`
-        return
+    fetch(API_URL, {
+      method: 'GET',
+      headers: {
+        apikey: API_KEY,
+        Authorization: `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json'
       }
-
-      if (!data || data.length === 0) {
-        list.innerHTML = '<li>Tidak ada data</li>'
-        return
+    })
+    .then(res => res.json())
+    .then(data => {
+      const list = document.getElementById('user-list');
+      if (data.length === 0) {
+        list.innerHTML = '<li><em>Data kosong</em></li>';
+        return;
       }
-
       data.forEach(user => {
-        const li = document.createElement('li')
-        li.textContent = `#${user.id} - ${user.address} (dibuat ${new Date(user.created_at).toLocaleString()})`
-        list.appendChild(li)
-      })
-    }
-
-    fetchUsers()
+        const li = document.createElement('li');
+        li.textContent = `ID: ${user.id} | Alamat: ${user.address}`;
+        list.appendChild(li);
+      });
+    })
+    .catch(err => {
+      console.error('Gagal fetch:', err);
+      document.getElementById('user-list').innerHTML = '<li><em>Gagal mengambil data</em></li>';
+    });
   </script>
 </body>
 </html>
