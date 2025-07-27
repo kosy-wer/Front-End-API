@@ -10,7 +10,7 @@
 
   <script>
     const supabaseUrl = 'https://ymbtbodeofdcgnsgxzzg.supabase.co'
-    const supabaseKey = 'your-anon-public-key'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME'
     const supabase = supabase.createClient(supabaseUrl, supabaseKey)
 
     async function fetchUsers() {
@@ -24,6 +24,7 @@
         list.appendChild(li)
       })
     }
+
 
     fetchUsers()
   </script>
