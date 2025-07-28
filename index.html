@@ -5,7 +5,11 @@
 </head>
 <body>
   <h3>Tambah Data</h3>
-  <button id="insertBtn">Tambah Alamat</button>
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Nama" required>
+    <input type="text" id="address" placeholder="Alamat" required>
+    <button id="insertBtn" type="submit">Tambah</button>
+  </form>
 
   <h3>Daftar Alamat:</h3>
   <select id="userSelect">
@@ -42,6 +46,7 @@
 
     // Tambah data ke Supabase
     document.getElementById("insertBtn").addEventListener("click", function () {
+      const address = document.getElementById("address").value;
       fetch(API_URL, {
         method: "POST",
         headers: {
@@ -50,7 +55,7 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          address: "Jl. Dahlia No. 12"
+          address: address
         })
       })
       .then(response => {
