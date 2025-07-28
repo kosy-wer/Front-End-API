@@ -1,42 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Supabase Fetch Example</title>
+  <title>Insert Data Supabase</title>
 </head>
 <body>
-  <h1>Data Users</h1>
-  <ul id="user-list"></ul>
+  <h2>Tambah User</h2>
+  <input type="text" id="address" placeholder="Masukkan Alamat" />
+  <button onclick="insertUser()">Insert</button>
+
+  <p id="result"></p>
 
   <script>
-    const API_URL = 'https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users';
-    const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME';
+    async function insertUser() {
+      const address = document.getElementById('address').value;
 
-    fetch(API_URL, {
-      method: 'GET',
-      headers: {
-        apikey: API_KEY,
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(res => res.json())
-    .then(data => {
-      const list = document.getElementById('user-list');
-      if (data.length === 0) {
-        list.innerHTML = '<li><em>Data kosong</em></li>';
-        return;
-      }
-      data.forEach(user => {
-        const li = document.createElement('li');
-        li.textContent = `ID: ${user.id} | Alamat: ${user.address}`;
-        list.appendChild(li);
+      const res = await fetch("https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users", {
+        method: "POST",
+        headers: {
+          "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          address: address
+        })
       });
-    })
-    .catch(err => {
-      console.error('Gagal fetch:', err);
-      document.getElementById('user-list').innerHTML = '<li><em>Gagal mengambil data</em></li>';
-    });
+
+      const data = await res.json();
+      document.getElementById('result').innerText = "Data berhasil ditambahkan: " + JSON.stringify(data);
+    }
   </script>
 </body>
 </html>
