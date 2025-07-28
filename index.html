@@ -1,72 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Supabase Users</title>
+  <meta charset="UTF-8">
+  <title>Supabase Insert Example</title>
 </head>
 <body>
-  <h3>Tambah Data</h3>
-  <button id="insertBtn">Tambah Alamat</button>
+  <h2>Tambah Data User</h2>
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Nama" required>
+    <input type="text" id="address" placeholder="Alamat" required>
+    <button type="submit">Tambah</button>
+  </form>
 
-  <h3>Daftar Alamat:</h3>
-  <select id="userSelect">
-    <option disabled selected>Loading...</option>
-  </select>
+  <h2>Data Users</h2>
+  <select id="userSelect"></select>
 
   <script>
     const API_URL = "https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users";
-    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME";
+    const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ...";
+    
+    const headers = {
+      "apikey": API_KEY,
+      "Authorization": "Bearer " + API_KEY,
+      "Content-Type": "application/json"
+    };
 
-    // Ambil semua data dan isi ke select
-    function loadUsers() {
-      fetch(API_URL + "?select=*", {
-        headers: {
-          "apikey": API_KEY,
-          "Authorization": "Bearer " + API_KEY
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        const select = document.getElementById("userSelect");
-        select.innerHTML = ""; // Kosongkan dulu
-        data.forEach(user => {
-          const option = document.createElement("option");
-          option.value = user.id || user.address; // fallback
-          option.textContent = user.address || "Tanpa alamat";
-          select.appendChild(option);
-        });
-      })
-      .catch(err => {
-        alert("Gagal ambil data: " + err.message);
+    // Insert Data
+    document.getElementById("userForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const address = document.getElementById("address").value;
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ name, address })
+      });
+
+      if (res.ok) {
+        alert("Sukses tambah data!");
+        loadUsers(); // reload select list
+      } else {
+        alert("Gagal menambah data!");
+      }
+    });
+
+    // Load data ke select
+    async function loadUsers() {
+      const res = await fetch(API_URL, { headers });
+      const data = await res.json();
+
+      const select = document.getElementById("userSelect");
+      select.innerHTML = "";
+      data.forEach(user => {
+        const option = document.createElement("option");
+        option.textContent = `${user.name} - ${user.address}`;
+        select.appendChild(option);
       });
     }
 
-    // Tambah data ke Supabase
-    document.getElementById("insertBtn").addEventListener("click", function () {
-      fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "apikey": API_KEY,
-          "Authorization": "Bearer " + API_KEY,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          address: "Jl. Dahlia No. 12"
-        })
-      })
-      .then(response => {
-        if (response.ok) {
-          alert("Data berhasil ditambahkan!");
-          loadUsers(); // Refresh list setelah tambah
-        } else {
-          return response.text().then(text => { throw new Error(text); });
-        }
-      })
-      .catch(error => {
-        alert("Gagal menambahkan data: " + error.message);
-      });
-    });
-
-    // Muat semua data saat halaman dibuka
+    // Panggil saat awal
     loadUsers();
   </script>
 </body>
