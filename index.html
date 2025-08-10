@@ -5,25 +5,23 @@
 </head>
 <body>
   <h3>Daftar Alamat:</h3>
-  <select id="userSelect">
-    <option disabled selected>Loading...</option>
-  </select>
+  <ul id="userList">
+    <li>Loading...</li>
+  </ul>
 
   <script>
-    // URL backend Railway
-    const API_BASE = "https://back-end-api-production-8290.up.railway.app";
+    const BACKEND_URL = "https://back-end-api-production-8290.up.railway.app/users";
 
     function loadUsers() {
-      fetch(API_BASE + "/users")
+      fetch(BACKEND_URL)
         .then(res => res.json())
         .then(data => {
-          const select = document.getElementById("userSelect");
-          select.innerHTML = "";
+          const ul = document.getElementById("userList");
+          ul.innerHTML = ""; // hapus "Loading..."
           data.forEach(user => {
-            const option = document.createElement("option");
-            option.value = user.id || user.address;
-            option.textContent = user.address || "Tanpa alamat";
-            select.appendChild(option);
+            const li = document.createElement("li");
+            li.textContent = user.address;
+            ul.appendChild(li);
           });
         })
         .catch(err => {
@@ -31,7 +29,6 @@
         });
     }
 
-    // Ambil data pas halaman dibuka
     loadUsers();
   </script>
 </body>
