@@ -1,34 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Daftar Alamat</title>
+  <title>Supabase Users</title>
 </head>
 <body>
+  <h3>Tambah Data</h3>
+  <form id="userForm">
+    <input type="text" id="address" placeholder="Alamat" required>
+    <button type="submit">Tambah</button>
+  </form>
+
   <h3>Daftar Alamat:</h3>
-  <ul id="userList">
-    <li>Loading...</li>
-  </ul>
+  <select id="userSelect">
+    <option disabled selected>Loading...</option>
+  </select>
+
+  <!-- Tempat untuk menampilkan log/error -->
+  <div id="log" style="margin-top:20px; color:black; white-space:pre-wrap; background:#f9f9f9; padding:10px; border:1px solid #ccc;"></div>
 
   <script>
     const BACKEND_URL = "https://back-end-api-production-8290.up.railway.app/users";
+    const logDiv = document.getElementById("log");
 
+    function logMessage(message, isError = false) {
+      const color = isError ? "red" : "black";
+      logDiv.innerHTML += `<div style="color:${color}">${message}</div>`;
+    }
+
+    // GET data dari backend
     function loadUsers() {
       fetch(BACKEND_URL)
-        .then(res => res.json())
+        .then(response => {
+          logMessage(`Status: ${response.status}`);
+          logMessage(`Headers: ${JSON.stringify([...response.headers.entries()], null, 2)}`);
+
+          if (!response.ok) {
+            return response.text().then(text => {
+              logMessage(`Response body (error): ${text}`, true);
+              throw new Error(`HTTP ${response.status}`);
+            });
+          }
+          return response.json();
+        })
         .then(data => {
-          const ul = document.getElementById("userList");
-          ul.innerHTML = ""; // hapus "Loading..."
+          logMessage(`Data diterima: ${JSON.stringify(data, null, 2)}`);
+          const select = document.getElementById("userSelect");
+          select.innerHTML = "";
           data.forEach(user => {
-            const li = document.createElement("li");
-            li.textContent = user.address;
-            ul.appendChild(li);
+            const option = document.createElement("option");
+            option.value = user.id;
+            option.textContent = user.address;
+            select.appendChild(option);
           });
         })
         .catch(err => {
-          alert("Gagal ambil data: " + err.message);
+          logMessage(`Fetch error: ${err.message}`, true);
         });
     }
 
+    // POST data ke backend
+    document.getElementById("userForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const address = document.getElementById("address").value;
+
+      fetch(BACKEND_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ address })
+      })
+        .then(response => {
+          logMessage(`Status (POST): ${response.status}`);
+          logMessage(`Headers (POST): ${JSON.stringify([...response.headers.entries()], null, 2)}`);
+
+          if (!response.ok) {
+            return response.text().then(text => {
+              logMessage(`Response body (error, POST): ${text}`, true);
+              throw new Error(`HTTP ${response.status}`);
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          logMessage(`Data berhasil ditambahkan: ${JSON.stringify(data, null, 2)}`);
+          document.getElementById("address").value = "";
+          loadUsers();
+        })
+        .catch(error => {
+          logMessage(`POST error: ${error.message}`, true);
+        });
+    });
+
+    // Muat data saat halaman pertama dibuka
     loadUsers();
   </script>
 </body>
