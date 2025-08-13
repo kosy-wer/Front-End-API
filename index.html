@@ -1,100 +1,77 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="id">
 <head>
-  <title>Supabase Users</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Starter</title>
+
+  <style>
+    /* ========= CSS RESET RINGAN & AMAN ========= */
+    /* 1) Box sizing */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* 2) Hilangkan margin default semua elemen */
+    * { margin: 0; }
+
+    /* 3) Tipografi dasar */
+    html, body { height: 100%; }
+    body {
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: #fff; color: #111;
+      min-height: 100dvh;
+    }
+
+    /* 4) Media responsif */
+    img, picture, video, canvas, svg { display: block; max-width: 100%; }
+
+    /* 5) Font form mengikuti body */
+    input, button, textarea, select { font: inherit; }
+
+    /* 6) Link & tombol default */
+    a { color: inherit; text-decoration: none; }
+    button { background: none; border: 0; padding: 0; cursor: pointer; }
+
+    /* 7) List tanpa bullet by default (opsional) */
+    ul[role="list"], ol[role="list"] { list-style: none; padding: 0; }
+
+    /* 8) Reduce motion untuk aksesibilitas */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* ========= BASIS LAYOUT ========= */
+    :root {
+      --container: 1200px;
+      --space: 16px;
+    }
+    .container {
+      width: min(100% - 2*var(--space), var(--container));
+      margin-inline: auto;
+    }
+    .section { padding: clamp(24px, 4vw, 64px) 0; }
+    h1, h2, h3 { line-height: 1.2; }
+  </style>
 </head>
 <body>
-  <h3>Tambah Data</h3>
-  <form id="userForm">
-    <input type="text" id="address" placeholder="Alamat" required>
-    <button type="submit">Tambah</button>
-  </form>
+  <header class="section">
+    <div class="container">
+      <h1>Halo dunia</h1>
+    </div>
+  </header>
 
-  <h3>Daftar Alamat:</h3>
-  <select id="userSelect">
-    <option disabled selected>Loading...</option>
-  </select>
+  <main class="section">
+    <div class="container">
+      <p>Mulai ngoding di sini…</p>
+    </div>
+  </main>
 
-  <!-- Tempat untuk menampilkan log/error -->
-  <div id="log" style="margin-top:20px; color:black; white-space:pre-wrap; background:#f9f9f9; padding:10px; border:1px solid #ccc;"></div>
-
-  <script>
-    const BACKEND_URL = "https://back-end-api-production-8290.up.railway.app/users";
-    const logDiv = document.getElementById("log");
-
-    function logMessage(message, isError = false) {
-      const color = isError ? "red" : "black";
-      logDiv.innerHTML += `<div style="color:${color}">${message}</div>`;
-    }
-
-    // GET data dari backend
-    function loadUsers() {
-      fetch(BACKEND_URL)
-        .then(response => {
-          logMessage(`Status: ${response.status}`);
-          logMessage(`Headers: ${JSON.stringify([...response.headers.entries()], null, 2)}`);
-
-          if (!response.ok) {
-            return response.text().then(text => {
-              logMessage(`Response body (error): ${text}`, true);
-              throw new Error(`HTTP ${response.status}`);
-            });
-          }
-          return response.json();
-        })
-        .then(data => {
-          logMessage(`Data diterima: ${JSON.stringify(data, null, 2)}`);
-          const select = document.getElementById("userSelect");
-          select.innerHTML = "";
-          data.forEach(user => {
-            const option = document.createElement("option");
-            option.value = user.id;
-            option.textContent = user.address;
-            select.appendChild(option);
-          });
-        })
-        .catch(err => {
-          logMessage(`Fetch error: ${err.message}`, true);
-        });
-    }
-
-    // POST data ke backend
-    document.getElementById("userForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const address = document.getElementById("address").value;
-
-      fetch(BACKEND_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ address })
-      })
-        .then(response => {
-          logMessage(`Status (POST): ${response.status}`);
-          logMessage(`Headers (POST): ${JSON.stringify([...response.headers.entries()], null, 2)}`);
-
-          if (!response.ok) {
-            return response.text().then(text => {
-              logMessage(`Response body (error, POST): ${text}`, true);
-              throw new Error(`HTTP ${response.status}`);
-            });
-          }
-          return response.json();
-        })
-        .then(data => {
-          logMessage(`Data berhasil ditambahkan: ${JSON.stringify(data, null, 2)}`);
-          document.getElementById("address").value = "";
-          loadUsers();
-        })
-        .catch(error => {
-          logMessage(`POST error: ${error.message}`, true);
-        });
-    });
-
-    // Muat data saat halaman pertama dibuka
-    loadUsers();
-  </script>
+  <footer class="section">
+    <div class="container">
+      <small>&copy; 2025</small>
+    </div>
+  </footer>
 </body>
 </html>
 
