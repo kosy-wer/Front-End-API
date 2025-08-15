@@ -33,7 +33,7 @@
     a { color: inherit; text-decoration: none; }
     button { background: none; border: 0; padding: 0; cursor: pointer; }
 
-    /* 7) List tanpa bullet by default (opsional) */
+    /* 7) List tanpa bulle by default (opsional) */
     ul[role="list"], ol[role="list"] { list-style: none; padding: 0; }
 
     /* 8) Reduce motion untuk aksesibilitas */
@@ -52,10 +52,77 @@
     }
     .section { padding: clamp(24px, 4vw, 64px) 0; }
     h1, h2, h3 { line-height: 1.2; }
-    .input-task{
-      border: 9px solid blue;
-      border-radius: 26px;
+    
+    input{
+      border: 2px solid blue;
+      border-radius: 8px;
+      height: 5vh;
+    font-size: 2vh;
     }
+    .input-task{
+      margin-right:10%;
+      width : 60%;
+      padding-left:10px; 
+    display: inline-block;
+      vertical-align: top;
+    }
+  .dropdown {
+    position: relative;
+    display: inline-block;
+      vertical-align: top;
+      height: 5vh;
+  }
+
+  .dropdown summary {
+    display: grid;
+  place-items: center;
+      height: 5vh;
+    font-size: 2vh;
+    list-style: none;
+    cursor: pointer;
+    padding: 8px 14px;
+    background: #0d6efd; /* biru bootstrap */
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+  }
+  .dropdown summary::marker,
+  .dropdown summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-width: 160px;
+    box-shadow: 0 4px 8px rgba(0,0,0,.08);
+    padding: 4px 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.15s ease;
+    z-index: 10;
+  }
+
+  details[open] .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .dropdown-menu a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+  }
+  .dropdown-menu a:hover {
+    background: #f0f0f0;
+  } 
   </style>
 </head>
 <body>
@@ -66,9 +133,19 @@
   </header>
 
   <main class="section">
-    <div class="container">
-      <input class="input-task" >
+   <div class="container">
+    <input type="search"class="input-task" value placeholder="search" >
+    <div class="dropdown">
+     <details>
+      <summary>Dropdown</summary>
+       <div class="dropdown-menu">
+        <a href="#">Action</a>
+        <a href="#">Another action</a>
+        <a href="#">Something else</a>
+       </div>
+     </details>
     </div>
+   </div>
   </main>
 
   <footer class="section">
