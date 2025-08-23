@@ -354,7 +354,7 @@ loadUsers();
       const Descriptions = document.getElementById("descriptions").value;
 
       try {
-        const response = await fetch(API, {
+        const response = await fetch(SUPABASE_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
