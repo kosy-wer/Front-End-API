@@ -243,6 +243,7 @@
     transform: rotate(0deg);
     transition: all 0.6s;
     height: 20vw;
+    background: white; 
   } 
 
   .rotate {
@@ -273,9 +274,9 @@
     <div class="input task" >
      <form>
       <label for="fname">Title</label>
-      <input type="text" id="fname" name="fname"><br><br>
+      <input type="text" id="title" name="fname"><br><br>
       <label for="lname">Descriptions</label>
-      <input type="text" id="lname" name="lname"><br><br>
+      <input type="text" id="descriptions" name="lname"><br><br>
       <input type="submit" value="Add">
      </form>
     </div>
@@ -286,6 +287,7 @@
       <p> Action</p>
     </div>
     <div class="circle" ></div>
+    <pre id="result"></pre>
    </div>
   </main>
 
@@ -297,6 +299,7 @@
   <script>
     const c = document.getElementsByClassName("circle")[0];
     const f = document.getElementsByTagName("form")[0];
+    const API = "http://localhost:8080/users";
 
     c.addEventListener("click", () => {
       c.classList.toggle("rotate");
@@ -306,6 +309,8 @@
 
     const SUPABASE_URL = "https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME";
+
+
 
     async function loadUsers() {
   try {
@@ -319,32 +324,48 @@
     const users = await response.json();
 
     const h = document.getElementsByClassName("list-data")[0];
+    users.slice().reverse().forEach((user, index) => {
+    const no = users.length - index;  
+    const div = document.createElement("div");
+    div.className = "data";
+    div.innerHTML = `
+    <div class="no">${no}</div>
+    <div>${user.Title}</div>
+    <div>${user.Descriptions}</div>
+    <div class="option">
+      <div class="edit">Edit</div>
+      <div class="delete">Delete</div>
+    </div>
+  `;
+  h.insertAdjacentElement("afterend", div);
+});
 
-    users.forEach((user, index) => {
-      // hitung nomor mulai dari total → 1
-      const no = users.length - index;
 
-      const div = document.createElement("div");
-      div.className = "data";
-      div.innerHTML = `
-        <div class="no">${no}</div>
-        <div>${user.Title}</div>
-        <div>${user.Descriptions}</div>
-        <div class="option">
-          <div class="edit">Edit</div>
-          <div class="delete">Delete</div>
-        </div>
-      `;
-
-      // taruh setelah header -> sibling
-      h.insertAdjacentElement("afterend", div);
-    });
   } catch (err) {
     console.error("Error:", err);
   }
 }
 
 loadUsers();
+  f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const Title = document.getElementById("title").value;
+      const Descriptions = document.getElementById("descriptions").value;
+
+      try {
+        const response = await fetch(API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ Title, Descriptions })
+        });
+
+      } catch (err) {
+        document.getElementById("result").innerText = "Error: " + err.message;
+      }
+    }); 
 
 
   </script>
