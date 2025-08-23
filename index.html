@@ -239,11 +239,11 @@
     aspect-ratio: 1;
     box-shadow: 0 0 0 2vh inset var(--c);
     border-image: conic-gradient(var(--c) 0 0) 50%/calc(50% - 0.5vh);
+    background: white; 
     clip-path: circle();
     transform: rotate(0deg);
     transition: all 0.6s;
     height: 20vw;
-    background: white; 
   } 
 
   .rotate {
@@ -299,7 +299,7 @@
   <script>
     const c = document.getElementsByClassName("circle")[0];
     const f = document.getElementsByTagName("form")[0];
-    const API = "http://localhost:8080/users";
+    const API = "http://localhost:8000/users";
 
     c.addEventListener("click", () => {
       c.classList.toggle("rotate");
@@ -310,39 +310,39 @@
     const SUPABASE_URL = "https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME";
 
+    const URL = "http://localhost:3000/users";
 
 
     async function loadUsers() {
   try {
-    const response = await fetch(SUPABASE_URL, {
-      headers: {
-        apikey: API_KEY,
-        Authorization: `Bearer ${API_KEY}`
-      }
-    });
+    const response = await fetch(URL);
 
     const users = await response.json();
 
     const h = document.getElementsByClassName("list-data")[0];
-    users.slice().reverse().forEach((user, index) => {
-    const no = users.length - index;  
-    const div = document.createElement("div");
-    div.className = "data";
-    div.innerHTML = `
-    <div class="no">${no}</div>
-    <div>${user.Title}</div>
-    <div>${user.Descriptions}</div>
-    <div class="option">
-      <div class="edit">Edit</div>
-      <div class="delete">Delete</div>
-    </div>
-  `;
-  h.insertAdjacentElement("afterend", div);
-});
 
+    users.forEach((user, index) => {
+      // hitung nomor mulai dari total → 1
+      const no = users.length - index;
 
+      const div = document.createElement("div");
+      div.className = "data";
+      div.innerHTML = `
+        <div class="no">${no}</div>
+        <div>${user.Title}</div>
+        <div>${user.Descriptions}</div>
+        <div class="option">
+          <div class="edit">Edit</div>
+          <div class="delete">Delete</div>
+        </div>
+      `;
+
+      // taruh setelah header -> sibling
+      h.insertAdjacentElement("afterend", div);
+    });
   } catch (err) {
     console.error("Error:", err);
+
   }
 }
 
@@ -354,19 +354,24 @@ loadUsers();
       const Descriptions = document.getElementById("descriptions").value;
 
       try {
-        const response = await fetch(SUPABASE_URL, {
+        const response = await fetch(URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({ Title, Descriptions })
         });
-        alert("succes");
-
-      } catch (err) {
-        document.getElementById("result").innerText = "Error: " + err.message;
-      }
-    }); 
+        if (response.ok) {
+      c.classList.toggle("rotate");
+      f.classList.toggle("active");
+    alert("succes");
+         } else {
+    alert("gagal");
+   }
+  } catch (err) {
+    alert("gagal");
+  }
+}); 
 
 
   </script>
