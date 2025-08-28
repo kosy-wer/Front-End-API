@@ -230,8 +230,9 @@
     width:35%;
   }
   .circle{
-    position: absolute;
-    z-index: 10;
+    position: fixed;
+    transition: bottom 0.3s ease;
+    z-index:990;
     top: 80%;
     left:75%;
     --c: #0d6efd;
@@ -296,6 +297,8 @@
       <small>&copy; 2025</small>
     </div>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>  
   <script>
     const c = document.getElementsByClassName("circle")[0];
     const f = document.getElementsByTagName("form")[0];
@@ -321,31 +324,46 @@
     const users = await response.json();
 
     const h = document.getElementsByClassName("list-data")[0];
+    users.reverse().forEach((user, index) => {
+  const no = users.length - index;
 
-    users.forEach((user, index) => {
-      // hitung nomor mulai dari total → 1
-      const no = users.length - index;
+  const div = document.createElement("div");
+  div.className = "data";
+  div.innerHTML = `
+    <div class="no">${no}</div>
+    <div>${user.Title}</div>
+    <div>${user.Descriptions}</div>
+    <div class="option" data-id="${user.id}">
+      <div class="edit">Edit</div>
+      <div class="delete">Delete</div>
+    </div>
+  `;
 
-      const div = document.createElement("div");
-      div.className = "data";
-      div.innerHTML = `
-        <div class="no">${no}</div>
-        <div>${user.Title}</div>
-        <div>${user.Descriptions}</div>
-        <div class="option">
-          <div class="edit">Edit</div>
-          <div class="delete">Delete</div>
-        </div>
-      `;
+  // taruh setelah header -> sibling
+  h.insertAdjacentElement("afterend", div);
 
-      // taruh setelah header -> sibling
-      h.insertAdjacentElement("afterend", div);
-    });
+  // ambil elemen option yg baru dibuat
+  const option = div.querySelector(".option");
+  const editBtn = option.querySelector(".edit");
+  const deleteBtn = option.querySelector(".delete");
+
+  editBtn.addEventListener("click", () => {
+    console.log("Edit ID:", option.dataset.id);
+  });
+
+  deleteBtn.addEventListener("click", () => {
+    console.log("Delete ID:", option.dataset.id);
+  });
+});
+
+
+
   } catch (err) {
     console.error("Error:", err);
 
   }
 }
+
 
 loadUsers();
   f.addEventListener("submit", async (e) => {
