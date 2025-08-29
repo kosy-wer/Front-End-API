@@ -287,9 +287,8 @@
       <p> Description</p>
       <p> Action</p>
     </div>
-    <div class="circle" ></div>
-    <pre id="result"></pre>
    </div>
+   <div class="circle" ></div>
   </main>
 
   <footer class="section">
@@ -313,8 +312,8 @@
     const SUPABASE_URL = "https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME";
 
-    //const URL = "http://localhost:3000/users";
-    const URL = "https://back-end-api-production-8290.up.railway.app/users";
+    const URL = "http://localhost:3000/users";
+    //const URL = "https://back-end-api-production-8290.up.railway.app/users";
 
 
     async function loadUsers() {
@@ -324,6 +323,15 @@
     const users = await response.json();
 
     const h = document.getElementsByClassName("list-data")[0];
+
+// hapus semua sibling setelah h
+let next = h.nextElementSibling;
+while (next) {
+  const tmp = next.nextElementSibling; // simpan sibling berikutnya
+  next.remove(); // hapus elemen
+  next = tmp; // lanjut ke sibling berikutnya
+}
+
     users.reverse().forEach((user, index) => {
   const no = users.length - index;
 
@@ -348,11 +356,18 @@
   const deleteBtn = option.querySelector(".delete");
 
   editBtn.addEventListener("click", () => {
-    console.log("Edit ID:", option.dataset.id);
+    const newTitle = prompt("Masukkan Title baru:", user.Title);
+  const newDesc = prompt("Masukkan Descriptions baru:", user.Descriptions);
+
+  if (newTitle && newDesc) {
+    updateUser(option.dataset.id, newTitle, newDesc);
+  }
   });
 
   deleteBtn.addEventListener("click", () => {
-    console.log("Delete ID:", option.dataset.id);
+    if (confirm("Yakin ingin menghapus user ini?")) {
+    deleteUser(option.dataset.id);
+  }
   });
 });
 
@@ -363,9 +378,56 @@
 
   }
 }
-
-
 loadUsers();
+async function deleteUser(id) {
+  try {
+    const response = await fetch(`http://localhost:3000/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Delete failed:", data);
+      return;
+    }
+
+    console.log("Deleted successfully:", data);
+    // refresh list
+    loadUsers();
+  } catch (err) {
+    console.error("Error deleting user:", err);
+  }
+}
+
+async function updateUser(id, Title, Descriptions) {
+  try {
+    const response = await fetch(`http://localhost:3000/users/${id}`, {
+      method: "PUT", // bisa juga PATCH sesuai backend
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ Title, Descriptions })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Update failed:", data);
+      return;
+    }
+
+    console.log("Updated successfully:", data);
+    // optional: reload list
+    loadUsers();
+  } catch (err) {
+    console.error("Error updating user:", err);
+  }
+}
+
   f.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -384,6 +446,7 @@ loadUsers();
       c.classList.toggle("rotate");
       f.classList.toggle("active");
     alert("succes");
+    loadUsers();
          } else {
     alert("gagal");
    }
