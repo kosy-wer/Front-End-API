@@ -255,23 +255,9 @@
 </head>
 <body>
  <header class="section">
-  <div class="container">
-   <h1>Halo dunia</h1>
-  </div>
  </header>
   <main class="section">
    <div class="container">
-    <input type="search"class="input-task" value placeholder="search" >
-    <div class="dropdown">
-     <details>
-      <summary>Dropdown</summary>
-       <div class="dropdown-menu">
-        <a href="#">Action</a>
-        <a href="#">Another action</a>
-        <a href="#">Something else</a>
-       </div>
-     </details>
-    </div>
     <div class="input task" >
      <form>
       <label for="fname">Title</label>
@@ -311,26 +297,28 @@
 
     const SUPABASE_URL = "https://ymbtbodeofdcgnsgxzzg.supabase.co/rest/v1/users";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InltYnRib2Rlb2ZkY2duc2d4enpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMyMzEwNTMsImV4cCI6MjA2ODgwNzA1M30.a4RqHjHgpFuRoyRnxueX4NJEoE2subxq-hnfXTwZhME";
-
-    //const URL = "http://localhost:3000/users";
-    const URL = "https://back-end-api-production-8290.up.railway.app/users";
-
+    const username = "admin";
+    const password = "12345";
+    const credentials = btoa(`${username}:${password}`);
+    const URL = "http://localhost:3000/users";
 
     async function loadUsers() {
   try {
-    const response = await fetch(URL);
-
+    const response = await fetch(URL,{
+     method: "GET",
+     headers: {
+        "Authorization": `Basic ${credentials}`,
+        "Content-Type": "application/json"
+      } 
+    });
     const users = await response.json();
     users.sort((a, b) => a.id - b.id);
-
     const h = document.getElementsByClassName("list-data")[0];
-
-// hapus semua sibling setelah h
-let next = h.nextElementSibling;
-while (next) {
-  const tmp = next.nextElementSibling; // simpan sibling berikutnya
-  next.remove(); // hapus elemen
-  next = tmp; // lanjut ke sibling berikutnya
+    let next = h.nextElementSibling;
+    while (next) {
+    const tmp = next.nextElementSibling;
+    next.remove();
+    next = tmp;
 }
 
     users.reverse().forEach((user, index) => {
@@ -348,10 +336,8 @@ while (next) {
     </div>
   `;
 
-  // taruh setelah header -> sibling
   h.insertAdjacentElement("afterend", div);
 
-  // ambil elemen option yg baru dibuat
   const option = div.querySelector(".option");
   const editBtn = option.querySelector(".edit");
   const deleteBtn = option.querySelector(".delete");
@@ -375,6 +361,7 @@ while (next) {
 
 
   } catch (err) {
+    alert("kesalahan server");
     console.error("Error:", err);
 
   }
@@ -385,6 +372,7 @@ async function deleteUser(id) {
     const response = await fetch(`${URL}/${id}`, {
       method: "DELETE",
       headers: {
+        "Authorization": `Basic ${credentials}`,
         "Content-Type": "application/json"
       }
     });
@@ -397,7 +385,6 @@ async function deleteUser(id) {
     }
 
     console.log("Deleted successfully:", data);
-    // refresh list
     loadUsers();
   } catch (err) {
     console.error("Error deleting user:", err);
@@ -409,6 +396,7 @@ async function updateUser(id, Title, Descriptions) {
     const response = await fetch(`${URL}/${id}`, {
       method: "PUT", // bisa juga PATCH sesuai backend
       headers: {
+        "Authorization": `Basic ${credentials}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ Title, Descriptions })
@@ -420,9 +408,7 @@ async function updateUser(id, Title, Descriptions) {
       console.error("Update failed:", data);
       return;
     }
-
-    console.log("Updated successfully:", data);
-    // optional: reload list
+    alert(data.message);
     loadUsers();
   } catch (err) {
     console.error("Error updating user:", err);
@@ -439,6 +425,7 @@ async function updateUser(id, Title, Descriptions) {
         const response = await fetch(URL, {
           method: "POST",
           headers: {
+            "Authorization": `Basic ${credentials}`,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({ Title, Descriptions })
